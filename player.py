@@ -1,5 +1,5 @@
 from collections import Counter
-from misc import *
+import misc
 class player:
 	# A class for the players
 	
@@ -18,9 +18,9 @@ class player:
 			suits.append(card.suit)
 		sortedSuits = Counter(suits).most_common()
 		
-		print(self.name)
-		print(sortedSuits)
-		print("\n")
+		#print(self.name)
+		#print(sortedSuits)
+		#print("\n")
 		
 		if sortedSuits[0][1] > 2: #call Trump
 			self.desiredTrump = sortedSuits[0][0]
@@ -39,20 +39,17 @@ class player:
 			return False
 			
 	def lowestCard(self):
-		lowestValue = self.hand[0].value
 		lowest = self.hand[0]
-		for i, card in enumerate(self.hand):
-			if card.value < lowestValue and not card.trump:
-				lowestValue = card.value
+		for card in self.hand:
+			if card.value < lowest.value and not card.trump:
 				lowest = card
+		print("Lowest card is %d of %s" %(lowest.value, lowest.suit)) 
 		return lowest
     
-	def highestOffsuit(self):
-		highestValue = self.hand[0].value
+	def highestOffSuit(self):
 		highest = self.hand[0]
-		for i, card in enumerate(self.hand):
-			if card.value > highestValue and not card.trump:
-				highestValue = card.value
+		for card in self.hand:
+			if card.value > highest.value and not card.trump:
 				highest = card
 		return highest
 	
@@ -68,27 +65,53 @@ class player:
 			highest = highestOffSuit
 		return highest
 	
-	def playCard(self, leadCard, cardsPlayed):
-		onSuit = leadCard.suit
-		playable = []
-		for card in self.hand:
-			if card.suit == leadCard.suit:
-				playable.append(card)
-		if not playable:
-			for card in self.hand:
-				if card.trump:
-					playable.append(card)
-			if not playable:
-				playable.append(self.lowestCard())
+	def playCard(self, cardsPlayed, trump):
+		if cardsPlayed:
 		
-		if len(playable) > 1:
-			trumper = card(0, 'squares')
-			for card in cardsPlayed:
-				if card.trump and card.value > trumper.value:
-					trumper = card
-			for card in playable:
-				if card.trump:
-					if card.value > trumper.value:
-						return card
+			playable = []
+			
+			for card in self.hand:
+				if card.suit == cardsPlayed[0].suit:
+					playable.append(card)
+					canFollow = True
+			
+			if len(playable) == 0:
+				for card in self.hand:
+					if card.trump:
+						playable.append(card)
+				if not playable:
+					playable.append(self.lowestCard())
+			
+			if len(playable) > 1:
+			
+				if canFollow:
+					save = misc.findLowest(playable)
+				else:
+					trumper = misc.card(0, 'squares')
+					for card in cardsPlayed:
+						if card.trump and card.value > trumper.value:
+							trumper = card
+					
+					for card in playable:
+						if card.trump:
+							if card.value > trumper.value:
+								save = card
+							else:
+								save = self.lowestCard()
+					
+			else:
+				save = playable[0]
 		else:
-			return playable[0]
+			print('%s is leading' %self.name)
+			save = self.highestOffSuit()
+			print("Leading highest off suit: %d of %s" %(save.value, save.suit)) 
+		
+		try:
+			save
+		except NameError:
+			print("Playing algorithm failed for %s" %self.name)
+			save = self.lowestCard()
+		
+		self.hand.remove(save)
+		return save
+	

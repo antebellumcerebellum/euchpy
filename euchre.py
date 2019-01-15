@@ -31,6 +31,7 @@ for player in players:
 
 
 round1.determineTrump()
+round1.playTrick()
 
 #for player in players:
 #	for card in player.hand:

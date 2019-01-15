@@ -67,5 +67,22 @@ class round:
 						print("%d of %s" %(car.value, car.suit))
 					print("\n")
 	
-	def playTrick(playerList):
-		pass
+	def playTrick(self):
+		for i, player in enumerate(self.players):
+			if player.lead:
+				add = i
+				break
+		
+		playedCards = []
+		for i in range(add, add+4):
+			nextCard = self.players[i % 4].playCard(playedCards, self.trump)
+			playedCards.append(nextCard)
+			#for card in playedCards:
+				#print("%d of %s" %(card.value, card.suit))
+		
+		print(len(playedCards))
+		print('These cards played:')
+		for card in playedCards:
+			print("%d of %s" %(card.value, card.suit))
+		print("\n")
+			

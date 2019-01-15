@@ -18,3 +18,22 @@ class kitty:
 		
 	def getTop(self):
 		return self.cards[0]
+		
+		
+def findLowest(cards):
+	for card in cards:
+		if not card.trump:
+			lowest = card
+			break
+	if not lowest:
+		allTrump = True
+		lowest = cards[0]
+	if not allTrump:
+		for card in cards:
+			if (card.value < lowest.value and not card.trump):
+				lowest = card
+	else:
+		for card in cards:
+			if (card.value < lowest.value):
+				lowest = card
+	return lowest
