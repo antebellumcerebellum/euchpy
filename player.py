@@ -12,6 +12,7 @@ class player:
 		self.toLeftOf = 0
 		self.desiredTrump = 'squares'
 		self.score = 0
+		self.points = 0
 	
        #with bCard
         def callTrump(self, topOfKitty, iteration):
@@ -36,7 +37,10 @@ class player:
                 return trumpless[0]
 
         def highestCard(self):
-                return hand[0]
+                return self.hand[0]
+
+        def clearHand(self):
+                self.hand = []
 
         def playCard(self, card):
                 try:
@@ -47,7 +51,7 @@ class player:
 
         #I didn't feel like reading throughout the whole playCard method because I am
         #lazy, so here's a algorithm I didn't even write down first to heck if it made sense
-        def turn(self, cardsPlayed, deck):#cardsPlayed is cards played for THIS trick only, deck is list of bCards remaining in deck
+        def turn(self, cardsPlayed, deck, kitty):#cardsPlayed is cards played for THIS trick only, deck is list of bCards remaining in deck
                 self.sortHand()
                 order = len(cardsPlayed)
 
@@ -72,10 +76,12 @@ class player:
                         playable.sort(key = lambda x: x.score, reverse = True)
                         #is something can't be played, draw and try again
                         if len(playable) == 0:
-                                if len(deck) == 0:
+                                if len(kitty) == 0:
                                         print("Fuck, I forgot what happens in this case. Probs not important lol")
-                                        break
-                                self.hand.append(deck.pop())#remove card from deck, add it to hand
+                                        return None
+                                goFish = kitty.pop()
+                                print(self.name + " pulled ",goFish)
+                                self.hand.append(goFish)#remove card from deck, add it to hand
                                 continue
                         if playable[0].score < sortedCardsPlayed[0].score:
                                 #if the cards out so far are all too good, there's no point in wasting a good card. Play a bad card

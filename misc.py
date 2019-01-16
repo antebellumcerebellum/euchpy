@@ -1,5 +1,5 @@
-rankNameDict = {'9':'9', '10':'10', '11':'Jack', '12':'Queen', '13':'King', '14':'Ace'}
-suitNameDict = {'c':'clubs', 's':'spades', 'h':'hearts', 'd':'diamonds'}
+rankNameDict = {'9':'9', '10':'10', '11':'Jack', '12':'Queen', '13':'King', '14':'Ace', '0':'Kaard'}
+suitNameDict = {'c':'clubs', 's':'spades', 'h':'hearts', 'd':'diamonds', 'null card':'Rouxls'}
 
 class Card:
         #bCard for better card.

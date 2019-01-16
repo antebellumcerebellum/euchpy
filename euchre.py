@@ -9,10 +9,10 @@ from misc import *
 
 ################################################################################
 
-player1 = player('Liz', 'Jane')
-player2 = player('Bingham', 'Liz')
-player3 = player('Darcy', 'Bingham')
-player4 = player('Jane', 'Darcy')
+player1 = player('Liz')
+player2 = player('Bingham')
+player3 = player('Darcy')
+player4 = player('Jane')
 player1.toLeftOf = player4
 player2.toLeftOf = player1
 player3.toLeftOf = player2
@@ -23,21 +23,31 @@ kitten = kitty()
 player1.lead = True
 player4.dealer = True
 
-#while (score < 10):
+Team1Score = 0
+Team2Score = 0
+
 round1 = Round(players, kitten)
-round1.deal()
+for i in range(10):
+        round1.deal()
 
-print("Player's Hands:")
-for player in players:
-	print(player.name)
-	for card in player.hand:
+        print("Player's Hands:")
+        for player in players:
+                print(player.name)
+                for card in player.hand:
 		
-		print(card)
-	print("\n")
+                        print(card)
+                print("\n")
 
 
-round1.determineTrump()
-round1.playRound()
+        round1.determineTrump()
+        round1.playRound()
+
+if player1.points > player2.points:
+        print(player1.name +" and "+ player3.name + " take the game")
+elif player1.points < player2.points:
+        print(player2.name +" and "+ player4.name + " take the game")
+else:
+        print("It's a fucking tie")
 
 #for player in players:
 #	for card in player.hand:

@@ -5,6 +5,9 @@ class Round:
 	def __init__(self, playerList, kitten):
 		self.players = playerList
 		self.kitty = kitten
+		self.nullCard = Card('null card',0)
+		self.nullCard.score = 0
+		
 		
 		self.deck = []
 		for suit in ['c', 's', 'h', 'd']:
@@ -51,7 +54,11 @@ class Round:
                         iteration += 1
                 print("trump selected: "+str(possiTrump.suit))
                 return possiTrump
-                
+
+        def nullTest(self, card):
+                if card == None:
+                        return self.nullCard
+                return card
 	
 	def playRound(self):
                 leadPlayer = list(filter(lambda x: x.lead, self.players))
@@ -65,19 +72,23 @@ class Round:
 		fourthPlayer = thirdPlayer.toLeftOf
 		playedCards = []
 		
-		while firstPlayer.score+thirdPlayer.score != 3 and secondPlayer.score+fourthPlayer.score != 3:
+		for j in range(5):
                         playedCards = []
                         print(firstPlayer.name + " to start next round")
-                        playedCards.append(firstPlayer.turn(playedCards, self.deck))
+                        newCard = firstPlayer.turn(playedCards, self.deck, self.kitty.cards)
+                        playedCards.append(self.nullTest(newCard))
                         print(firstPlayer.name+" played "+str(playedCards[-1])+" ("+str(playedCards[-1].score)+")")
                         secondPlayer = firstPlayer.toLeftOf
-                        playedCards.append(secondPlayer.turn(playedCards, self.deck))
+                        newCard = secondPlayer.turn(playedCards, self.deck, self.kitty.cards)
+                        playedCards.append(self.nullTest(newCard))
                         print(secondPlayer.name+" played "+str(playedCards[-1])+" ("+str(playedCards[-1].score)+")")
                         thirdPlayer = secondPlayer.toLeftOf
-                        playedCards.append(thirdPlayer.turn(playedCards, self.deck))
+                        newCard = thirdPlayer.turn(playedCards, self.deck, self.kitty.cards)
+                        playedCards.append(self.nullTest(newCard))
                         print(thirdPlayer.name+" played "+str(playedCards[-1])+" ("+str(playedCards[-1].score)+")")
                         fourthPlayer = thirdPlayer.toLeftOf
-                        playedCards.append(fourthPlayer.turn(playedCards, self.deck))
+                        newCard = fourthPlayer.turn(playedCards, self.deck, self.kitty.cards)
+                        playedCards.append(self.nullTest(newCard))
                         print(fourthPlayer.name+" played "+str(playedCards[-1])+" ("+str(playedCards[-1].score)+")")
 
                         maxIndex = 0
@@ -85,16 +96,34 @@ class Round:
                                 if card.score > playedCards[maxIndex].score:
                                         maxIndex = i
 
-                        print(playedCards[maxIndex],"wins!")
                         players = [firstPlayer, secondPlayer, thirdPlayer, fourthPlayer]
                         players[maxIndex].score += 1
+                        print(players[maxIndex].name+" with",playedCards[maxIndex],"wins!")
+
+                        if j == 4:
+                                break
 
                         firstPlayer = players[maxIndex]
                         
-
-                if firstPlayer.score+thirdPlayer.score == 3:
+                teamScores = [firstPlayer.score+thirdPlayer.score, secondPlayer.score+fourthPlayer.score]
+                if firstPlayer.score+thirdPlayer.score >= 3:
                         print(firstPlayer.name + " and " + thirdPlayer.name + " win!" )
+                        if teamScores[0] == 5:
+                                print("It's a march!")
+                                firstPlayer.points += 1
+                                thirdPlayer.points += 1
+                        firstPlayer.points += 1
+                        thirdPlayer.points += 1
                 else:
                         print(secondPlayer.name + " and " + fourthPlayer.name + " win." )
+                        if teamScores[1] == 5:
+                                print("It's a march!")
+                                secondPlayer.points += 1
+                                fourthPlayer.points += 1
+                        secondPlayer.points += 1
+                        fourthPlayer.points += 1
+
+                for players in self.players:
+                        players.clearHand()
 
 			
