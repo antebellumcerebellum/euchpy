@@ -3,51 +3,17 @@ import misc
 class player:
 	# A class for the players
 	
-	def __init__(self, name, nextTo):
+	def __init__(self, name, hand=[]):
 		self.name = name
-		self.hand = []
+		self.hand = hand
 		self.lead = False
 		self.dealer = False
 		self.called = False
-		self.toLeftOf = nextTo
+		self.toLeftOf = 0
 		self.desiredTrump = 'squares'
+		self.score = 0
 	
-	def callTrump(self, topOfKitty, iter):
-		suits = []
-		for card in self.hand:
-			suits.append(card.suit)
-		sortedSuits = Counter(suits).most_common()
-		
-		#print(self.name)
-		#print(sortedSuits)
-		#print("\n")
-		
-		if sortedSuits[0][1] > 2: #call Trump
-			self.desiredTrump = sortedSuits[0][0]
-			call = True
-		else:
-			self.desiredTrump = sortedSuits[0][0]
-			call = False
-		
-		if self.desiredTrump == topOfKitty.suit and call:
-			return True
-		elif (iter == 2 and call is True):#I will never let you live this down - Jeremy
-			return True
-		elif (iter ==2 and self.dealer):
-			return True
-		else:
-			return False
-			
-	def lowestCard(self):
-		lowest = self.hand[0]
-		for card in self.hand:
-			if card.value < lowest.value and not card.trump:
-				lowest = card
-		print("Lowest card is %d of %s" %(lowest.value, lowest.suit)) 
-		return lowest
-
        #with bCard
-"""
         def callTrump(self, topOfKitty, iteration):
                 self.sortHand()
 
@@ -81,8 +47,18 @@ class player:
 
         #I didn't feel like reading throughout the whole playCard method because I am
         #lazy, so here's a algorithm I didn't even write down first to heck if it made sense
-        def turn(self, cardsPlayed, deck):#cardsPlayed is cards played for THIS round only, deck is list of bCards remaining in deck
+        def turn(self, cardsPlayed, deck):#cardsPlayed is cards played for THIS trick only, deck is list of bCards remaining in deck
+                self.sortHand()
                 order = len(cardsPlayed)
+
+                #if you are first to play, avoid trump but aim high.
+                if order == 0:
+                        try:
+                                return self.playCard(self.highestOffSuit())
+                        except: #if it's all trumps, oh well.
+                                return self.playCard(self.hand[0])
+                        
+                
                 sortedCardsPlayed = cardsPlayed[:]
                 sortedCardsPlayed.sort(key = lambda x: x.score, reverse = True)
 
@@ -97,9 +73,9 @@ class player:
                         #is something can't be played, draw and try again
                         if len(playable) == 0:
                                 if len(deck) == 0:
-                                        print("Fuck, I forgot what happens in this case")
-                                        continue
-                                self.Hand.append(deck.pop())#remove card from deck, add it to hand
+                                        print("Fuck, I forgot what happens in this case. Probs not important lol")
+                                        break
+                                self.hand.append(deck.pop())#remove card from deck, add it to hand
                                 continue
                         if playable[0].score < sortedCardsPlayed[0].score:
                                 #if the cards out so far are all too good, there's no point in wasting a good card. Play a bad card
@@ -109,79 +85,8 @@ class player:
                                         return self.playCard(playable[-1])
                                 #else, it could be worth playing something higher.
                                 #it could be worth playing higher, but the level of conservativeness you should play with should be weighted by how many more people have to take their turns, and how many cards you have that are high
-                                neoPlayable = list(filter(lambda x: x.score > sortedCardsPlayed[0].score))
+                                neoPlayable = list(filter(lambda x: x.score >= sortedCardsPlayed[0].score, playable))
                                 #numNeoPlay = len(neoPlayable)
                                 #conservatism = 4 - order
                                 #if numNeoPlay 
                                 return self.playCard(neoPlayable[0])# eh, screw the math. Play defensively.
-"""
-    
-	def highestOffSuit(self):
-		highest = self.hand[0]
-		for card in self.hand:
-			if card.value > highest.value and not card.trump:
-				highest = card
-		return highest
-	
-	def highestCard(self):
-		highestValue = self.hand[0].value
-		highest = self.hand[0]
-		for i, card in enumerate(self.hand):
-			if card.value > highestValue and card.trump:
-				highestValue = card.value
-				highest = card
-				haveTrump = True
-		if not haveTrump:
-			highest = highestOffSuit
-		return highest
-	
-	def playCard(self, cardsPlayed, trump):
-		if cardsPlayed:
-		
-			playable = []
-			
-			for card in self.hand:
-				if card.suit == cardsPlayed[0].suit:
-					playable.append(card)
-					canFollow = True
-			
-			if len(playable) == 0:
-				for card in self.hand:
-					if card.trump:
-						playable.append(card)
-				if not playable:
-					playable.append(self.lowestCard())
-			
-			if len(playable) > 1:
-			
-				if canFollow:
-					save = misc.findLowest(playable)
-				else:
-					trumper = misc.card(0, 'squares')
-					for card in cardsPlayed:
-						if card.trump and card.value > trumper.value:
-							trumper = card
-					
-					for card in playable:
-						if card.trump:
-							if card.value > trumper.value:
-								save = card
-							else:
-								save = self.lowestCard()
-					
-			else:
-				save = playable[0]
-		else:
-			print('%s is leading' %self.name)
-			save = self.highestOffSuit()
-			print("Leading highest off suit: %d of %s" %(save.value, save.suit)) 
-		
-		try:
-			save
-		except NameError:
-			print("Playing algorithm failed for %s" %self.name)
-			save = self.lowestCard()
-		
-		self.hand.remove(save)
-		return save
-	

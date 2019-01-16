@@ -1,18 +1,7 @@
-class card:
-	# A class to represent a single card
-	
-	def __init__(self, newSuit, newValue):
-		self.suit = newSuit #Suit
-		self.value = newValue #Value, 9-A
-		self.trump = False
-		if newValue == 11:
-			if (newSuit == 'diamonds' or newSuit == 'hearts'):
-				self.color = 'red'
-			else:
-				self.color = 'black'
+rankNameDict = {'9':'9', '10':'10', '11':'Jack', '12':'Queen', '13':'King', '14':'Ace'}
+suitNameDict = {'c':'clubs', 's':'spades', 'h':'hearts', 'd':'diamonds'}
 
-
-class bCard:
+class Card:
         #bCard for better card.
         #like card, but with more variables to work with
         def __init__(self, suit, rank):
@@ -29,7 +18,7 @@ class bCard:
         #trumpFamily - family of suit that trump belongs to
         #all cards should have this method run once the kitty card has been revealed.
         #should be rerun if everyone disses the kitty card.
-        def score(self, trump, trumpFamily):
+        def scoreIt(self, trump, trumpFamily):
                 self.score = self.rank
                 if trump == self.suit:
                         self.trump = True
@@ -41,7 +30,9 @@ class bCard:
                         self.score+=6
 
         #to sort in player's hand, use hand.sort(key = lambda x: x.score, reverse=True)
-                        
+
+        def __repr__(self):
+                return rankNameDict[str(self.rank)]+" of "+suitNameDict[self.suit]
 
 class kitty:
 	def __init__(self):
@@ -49,22 +40,3 @@ class kitty:
 		
 	def getTop(self):
 		return self.cards[0]
-		
-		
-def findLowest(cards):
-	for card in cards:
-		if not card.trump:
-			lowest = card
-			break
-	if not lowest:
-		allTrump = True
-		lowest = cards[0]
-	if not allTrump:
-		for card in cards:
-			if (card.value < lowest.value and not card.trump):
-				lowest = card
-	else:
-		for card in cards:
-			if (card.value < lowest.value):
-				lowest = card
-	return lowest
